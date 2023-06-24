@@ -7,6 +7,7 @@ package it.polito.tdp.food;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.food.model.Food;
 import it.polito.tdp.food.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -41,7 +42,7 @@ public class FoodController {
     private Button btnSimula; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxFood"
-    private ComboBox<?> boxFood; // Value injected by FXMLLoader
+    private ComboBox<Food> boxFood; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
@@ -49,13 +50,30 @@ public class FoodController {
     @FXML
     void doCreaGrafo(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Creazione grafo...");
+    	String s = this.txtPorzioni.getText();
+    	try {
+    		int i = Integer.parseInt(s);
+    		if(i>0) {
+    			model.creaGrafo(i);
+    			this.setCombo(i);
+    			txtResult.appendText("Creato grafo con "+model.getGrafo().vertexSet().size()+" vertici e "+model.getGrafo().edgeSet().size()+" archi;\n");
+    		}
+    	}catch(NumberFormatException e){
+    		e.printStackTrace();
+    		this.txtResult.appendText("Numero porzioni inserito in maniera sbagliata!");
+    	}
     }
     
     @FXML
     void doCalorie(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Analisi calorie...");
+    	Food f = this.boxFood.getValue();
+    	if(f!=null) {
+    		this.txtResult.appendText(model.Calorie(f));
+    	}else {
+    		this.txtResult.appendText("Nessuna selezione effettuata.");
+    	}
+    	
     }
 
     @FXML
@@ -77,5 +95,11 @@ public class FoodController {
     
     public void setModel(Model model) {
     	this.model = model;
+    }
+    
+    public void setCombo(int n) {
+    	for(Food f : model.setCombo(n)) {
+    		this.boxFood.getItems().add(f);
+    	}
     }
 }
